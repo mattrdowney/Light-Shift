@@ -2,7 +2,7 @@
 
 public static class Circle
 {
-    public const int sectors = 1*2*3*(4/2)*5*(6/2/3)*7;
+    public const int sectors = 1*2*3*(4/2)*5*(6/2/3);
 
     public static Mesh circle_mesh()
     {
