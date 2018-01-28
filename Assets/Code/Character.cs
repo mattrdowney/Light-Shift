@@ -36,9 +36,10 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D()
+    private void OnTriggerEnter2D()
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
+        Debug.LogError("YESH!");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
     }
 
     private void generate_material()
@@ -97,18 +98,22 @@ public class Character : MonoBehaviour
     private Vector2 magnetize()
     {
         Vector2 force = Vector2.zero;
-        foreach (Vector2 direction in new Vector2[]{ Vector2.left, Vector2.right, Vector2.down, Vector2.up })
+        foreach (Vector2 direction in new Vector2[]{ Vector2.up, Vector2.left, Vector2.down, Vector2.right })
         {
             RaycastHit2D raycast_information = Physics2D.Raycast(transform.position, direction);
             for (int color = 0; color < rainbow_colors.Length; ++color)
             {
                 if (raycast_information.collider && rainbow_keys[color])
                 {
-                    force += direction * raycast_information.distance * -Vector2.Dot(rainbow_directions[color],
-                            rainbow_directions[raycast_information.transform.gameObject.layer - LayerMask.NameToLayer("Red")]);
+                    Vector2 color_polarity1 = rainbow_directions[color];
+                    Vector2 color_polarity2 = rainbow_directions[raycast_information.transform.gameObject.layer - LayerMask.NameToLayer("Red")];
+                    float similarity = Vector2.Dot(color_polarity1, color_polarity2);
+                    force -= similarity * direction / raycast_information.distance;
+                    Debug.LogWarning("Happening " + Time.time);
                 }
             }
         }
+        Debug.LogWarning(force.ToString("F6") + " " + Time.time);
         if (Mathf.Abs(force.x) - Mathf.Abs(force.y) > threshold)
         {
             if (force.x > 0)
@@ -169,10 +174,10 @@ public class Character : MonoBehaviour
     public static readonly Color[] rainbow_colors = new Color[] { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private static readonly Vector2[] rainbow_directions = new Vector2[] {
             Vector2.right,
-            new Vector2(Mathf.Cos(2*Mathf.PI*(1/6)), Mathf.Sin(2*Mathf.PI*(1/6))),
-            new Vector2(Mathf.Cos(2*Mathf.PI*(2/6)), Mathf.Sin(2*Mathf.PI*(2/6))),
+            new Vector2(Mathf.Cos(2*Mathf.PI*(1f/6)), Mathf.Sin(2*Mathf.PI*(1f/6))),
+            new Vector2(Mathf.Cos(2*Mathf.PI*(2f/6)), Mathf.Sin(2*Mathf.PI*(2f/6))),
             Vector2.left,
-            new Vector2(Mathf.Cos(2*Mathf.PI*(4/6)), Mathf.Sin(2*Mathf.PI*(4/6))),
-            new Vector2(Mathf.Cos(2*Mathf.PI*(5/6)), Mathf.Sin(2*Mathf.PI*(5/6))) };
+            new Vector2(Mathf.Cos(2*Mathf.PI*(4f/6)), Mathf.Sin(2*Mathf.PI*(4f/6))),
+            new Vector2(Mathf.Cos(2*Mathf.PI*(5f/6)), Mathf.Sin(2*Mathf.PI*(5f/6))) };
     private static Character[] entangled_characters;
 }
