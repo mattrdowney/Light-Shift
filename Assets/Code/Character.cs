@@ -36,7 +36,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        if (this == entangled_characters[0])
+        if (entangled_characters != null && this == entangled_characters[0])
         {
             for (int color = 0; color < rainbow_colors.Length; ++color)
             {
@@ -46,13 +46,34 @@ public class Character : MonoBehaviour
                     break;
                 }
             }
+            if (Input.GetKeyDown(KeyCode.LeftArrow) && 1 <= this.gameObject.scene.buildIndex)
+            {
+                entangled_characters = null;
+                SceneManager.LoadScene(this.gameObject.scene.buildIndex - 1);
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow) && this.gameObject.scene.buildIndex <= SceneManager.sceneCountInBuildSettings - 2)
+            {
+                entangled_characters = null;
+                SceneManager.LoadScene(this.gameObject.scene.buildIndex + 1);
+            }
         }
     }
 
     private void OnTriggerEnter2D()
     {
-        Debug.LogError("YESH!");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
+        if (entangled_characters != null && this == entangled_characters[0])
+        {
+            if (this.gameObject.scene.buildIndex <= SceneManager.sceneCountInBuildSettings - 2)
+            {
+                entangled_characters = null;
+                SceneManager.LoadScene(this.gameObject.scene.buildIndex + 1);
+            }
+            else
+            {
+                Application.Quit();
+            }
+            //SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(SceneManager.GetActiveScene().buildIndex + 1));
+        }
     }
 
     private void generate_material()
