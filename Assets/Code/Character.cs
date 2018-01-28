@@ -17,8 +17,21 @@ public class Character : MonoBehaviour
         colors = new Color[Circle.sectors];
          
         mesh_renderer.material = material;
-        mesh_renderer.sortingOrder = 0;
         generate_material();
+
+        // Extra aesthetics for knowing which circles are the player.
+        GameObject extra_graphics = new GameObject("PlayerIdentifier");
+        extra_graphics.transform.parent = this.transform;
+        MeshFilter child_mesh_filter = extra_graphics.AddComponent<MeshFilter>();
+        child_mesh_filter.sharedMesh = Circle.circle_mesh();
+        Material child_material = new Material(Shader.Find("Unlit/Texture"));
+        child_material.mainTexture = get_colors(new Color[] { Color.white });
+        MeshRenderer child_mesh_renderer = extra_graphics.AddComponent<MeshRenderer>();
+        child_mesh_renderer.material = child_material;
+        extra_graphics.transform.SetParent(this.transform);
+        extra_graphics.transform.localPosition = Vector3.zero;
+        extra_graphics.transform.localScale = Vector3.one*0.3f;
+        child_mesh_renderer.sortingOrder = 1;
     }
 
     private void Update()
